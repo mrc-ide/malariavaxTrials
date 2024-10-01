@@ -33,7 +33,9 @@ acquire_immunity_r <- function(exposure, u, d) {
 
 #' @export
 get_icm <- function(age, ica20, pm, dm){
+
   pm * ica20 * exp(- age / dm)
+
 }
 
 #' Estimate the average level of immunity in a 20 year old women
