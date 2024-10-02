@@ -21,6 +21,18 @@ get_epsilon <- function(age, eir, rho, a0, gamma_llin = 1){
 #' @export
 get_infection_hazard <- function(epsilon, b, seasonality = NULL, vaccine_efficacy = NULL){
 
+  if(!is.null(seasonality) & length(seasonality) != length(epsilon)) {
+    "seasonality and epsilon must have the same length"
+  }
+
+  if(!is.null(vaccine_efficacy) & length(vaccine_efficacy) != length(epsilon)) {
+    "vaccine_efficacy and epsilon must have the same length"
+  }
+
+  if(any(seasonality < 0)) {
+    stop("All values in season must be positive")
+  }
+
   ih <- epsilon * b
 
   if(!is.null(seasonality)){
@@ -81,9 +93,25 @@ get_clinical_hazard <- function(eir, age_at_enrollment, gamma_llin, vx,
                                 rho, a0, ub, db, b0, b1, ib0, kb, uc, dc,
                                 phi0, phi1, ic0, kc, cpp = TRUE) {
 
+
+
+  if(length(vx) < length(age)) {
+    stop("vx must be the same length as the age vector or longer")
+  }
+
+
+  if(max(age) < age_at_enrollment) {
+    stop("age_at_enrollment must be within age vector")
+  }
+
   if(length(season) %% 365 != 0){
     stop("The length of the season vector must be a multiple of 365")
   }
+
+  if(n < 1 | n != floor(n)) {
+    stop("n must be an integer >= 1")
+  }
+
 
   time <- round(age - age_at_enrollment)
   vx_shift <- c(rep(0, sum(time < 0)), vx)[age]

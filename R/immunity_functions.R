@@ -34,6 +34,10 @@ acquire_immunity_r <- function(exposure, u, d) {
 #' @export
 get_icm <- function(age, ica20, pm, dm){
 
+  if(length(ica20) > 1) {
+    stop("ica20 must be a single value")
+  }
+
   pm * ica20 * exp(- age / dm)
 
 }
@@ -59,6 +63,11 @@ get_icm <- function(age, ica20, pm, dm){
 #' @export
 get_maternal_start <- function(eir, gamma_llin,
                                season, rho, a0, ub, db, b0, b1, ib0, kb, uc, dc, cpp = TRUE){
+
+
+  if(length(season) %% 365 != 0) {
+    stop("The length of the season vector must be a multiple of 365")
+  }
 
   age <- 0:(365*20)
   vx <- rep(0, length(age))

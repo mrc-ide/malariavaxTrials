@@ -32,6 +32,23 @@ simulate_trial_hazards <- function(eir, age_at_enrollment, gamma_llin, vx, r_cli
     stop("vx vectors must be the same length as the age vector or longer")
   }
 
+  if(max(age) < age_at_enrollment) {
+    stop("age_at_enrollment must be within age vector")
+  }
+
+  if(length(season) %% 365 != 0) {
+    stop("The length of the season vector must be a multiple of 365")
+  }
+
+  if(any(season < 0)) {
+    stop("All values in season must be positive")
+  }
+
+
+  if(n < 1 | n != floor(n)) {
+    stop("n must be an integer >= 1")
+  }
+
   # Load fitted model parameters
     url <- "https://raw.github.com/mrc-ide/malariaEquilibrium/master/inst/extdata/Jamie_parameters.rds"
     p <- readRDS(gzcon(url(url)))
@@ -64,6 +81,7 @@ simulate_trial_hazards <- function(eir, age_at_enrollment, gamma_llin, vx, r_cli
                                   rho = p$rho, a0 = p$a0, ub = p$ub, db = p$db,
                                   b0 = p$b0, b1 = p$b1, ib0 = p$IB0, kb = p$kb,
                                   uc = p$uc, dc = p$dc, cpp = cpp)
+
 
   icm_no_itn <- get_icm(age = age, ica20 = ica20_no_itn, pm = p$PM, dm = p$dm)
   icm_itn <- get_icm(age = age, ica20 = ica20_itn, pm = p$PM, dm = p$dm)
