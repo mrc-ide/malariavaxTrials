@@ -1,27 +1,26 @@
 #' Simulate clinical hazard in trial cohort
 #'
 #' Simulate clinical hazard in the vaccine and control arms of a trial.
-#' Option to adjust for ITN use in the trial (@param gamma_llin).
 #' Clinical incidence is returned individually for the vaccine arms with and without bednets
 #' and the control arm with and without bednets to allow fitting to invididual-level
-#' data by ITN use.
+#' data by ITN use. Option to adjust for ITN use in the trial using `gamma_llin`.
 #'
 #' @param eir EIR per day.
+#' @param age Vector of simulation age/time (in days) over a sufficiently long period, e.g. 1:(365 * 10). Cannot be longer than vectors in vx.
 #' @param age_at_enrollment Age at enrollment into trial (days).
-#' @param gamma_llin Adjustment to exposure for individuals sleeping under a bednet.
-#' @param vx Vaccine efficacy over time (proportion). Must be a list of vectors. Can contain multiple vectors for different vaccine arms in the trial (e.g. different doses, booster schedules)
+#' @param gamma_llin Adjustment to exposure for individuals sleeping under a bednet. Set to 1 if not adjusting for this.
+#' @param vx Vaccine efficacy against infection over time (proportion). Must be a list of vectors. Can contain multiple vectors for different vaccine arms in the trial (e.g. different doses, booster schedules).
 #' @param r_clin Adjustment for case definition.
-#' @param age Vector of age/time (in days) over a sufficiently long time, e.g. 1:(365 * 12).
-#' @param n Number of heterogeneity groups (in mosquito bite exposure)
-#' @param season Seasonality profile. Default = rep(1, 365) - no seasonality.
-#' @param overrides a named list of parameter values to use instead of defaults.
-#' @param cpp Use cpp functions. Default = TRUE
+#' @param n Number of heterogeneity groups (in mosquito bite exposure). Default = 10.
+#' @param season Seasonality profile (vector of seasonality per day). Default = rep(1, 365) - no seasonality. Can also be generated using `get_season`.
+#' @param overrides A named list of parameter values to use instead of defaults. Can be used to change malaria model parameters.
+#' @param cpp Use cpp functions. Default = TRUE.
 #'
 #' @return List of simulated clinical hazards for each trial arm cohort
 #'
 #' @export
-simulate_trial_hazards <- function(eir, age_at_enrollment, gamma_llin, vx, r_clin,
-                                   age, n = 10, season = rep(1, 365),
+simulate_trial_hazards <- function(eir, age, age_at_enrollment, gamma_llin, vx, r_clin,
+                                   n = 10, season = rep(1, 365),
                                    overrides = list(s2 = 1.16), cpp = TRUE) {
 
   if(class(vx) != "list") {
@@ -105,17 +104,22 @@ simulate_trial_hazards <- function(eir, age_at_enrollment, gamma_llin, vx, r_cli
                                                kc = p$kc, cpp = cpp)
 
     # For vaccine cohort, with bednets
-    vax_itn[[i]] <- r_clin * get_clinical_hazard(eir = eir, age_at_enrollment = age_at_enrollment,
-                                            gamma_llin = gamma_llin, vx = vx[[i]], season = season,
-                                            icm = icm_itn, age = age, n = n, zeta = zeta, weight = weight,
-                                            rho = p$rho, a0 = p$a0, ub = p$ub, db = p$db, b0 = p$b0,
-                                            b1 = p$b1, ib0 = p$IB0, kb = p$kb, uc = p$uc,
-                                            dc = p$dc, phi0 = p$phi0, phi1 = p$phi1, ic0 = p$IC0,
-                                            kc = p$kc, cpp = cpp)
+    if (gamma_llin != 1) {
+      vax_itn[[i]] <- r_clin * get_clinical_hazard(eir = eir, age_at_enrollment = age_at_enrollment,
+                                                   gamma_llin = gamma_llin, vx = vx[[i]], season = season,
+                                                   icm = icm_itn, age = age, n = n, zeta = zeta, weight = weight,
+                                                   rho = p$rho, a0 = p$a0, ub = p$ub, db = p$db, b0 = p$b0,
+                                                   b1 = p$b1, ib0 = p$IB0, kb = p$kb, uc = p$uc,
+                                                   dc = p$dc, phi0 = p$phi0, phi1 = p$phi1, ic0 = p$IC0,
+                                                   kc = p$kc, cpp = cpp)
+    }
+
   }
 
   names(vax_no_itn) <- paste0(rep("vax_no_itn_arm", n_vaccine_arms), 1:n_vaccine_arms)
-  names(vax_itn) <- paste0(rep("vax_itn_arm", n_vaccine_arms), 1:n_vaccine_arms)
+  if (gamma_llin != 1) {
+    names(vax_itn) <- paste0(rep("vax_itn_arm", n_vaccine_arms), 1:n_vaccine_arms)
+  }
 
   # For unvaccinated cohort, without bednets
   control_no_itn <- r_clin * get_clinical_hazard(eir = eir, age_at_enrollment = age_at_enrollment,
@@ -130,18 +134,25 @@ simulate_trial_hazards <- function(eir, age_at_enrollment, gamma_llin, vx, r_cli
   control_no_itn <- list(control_no_itn = control_no_itn)
 
   # For unvaccinated cohort, with bednets
-  control_itn <- r_clin * get_clinical_hazard(eir = eir, age_at_enrollment = age_at_enrollment,
-                                         gamma_llin = gamma_llin, vx = rep(0, length(age)),
-                                         season = season, icm = icm_itn, age = age,
-                                         n = n, zeta = zeta, weight = weight,
-                                         rho = p$rho, a0 = p$a0, ub = p$ub,
-                                         db = p$db, b0 = p$b0, b1 = p$b1,
-                                         ib0 = p$IB0, kb = p$kb, uc = p$uc, dc = p$dc,
-                                         phi0 = p$phi0, phi1 = p$phi1, ic0 = p$IC0, kc = p$kc, cpp = cpp)
+  if (gamma_llin != 1) {
+    control_itn <- r_clin * get_clinical_hazard(eir = eir, age_at_enrollment = age_at_enrollment,
+                                                gamma_llin = gamma_llin, vx = rep(0, length(age)),
+                                                season = season, icm = icm_itn, age = age,
+                                                n = n, zeta = zeta, weight = weight,
+                                                rho = p$rho, a0 = p$a0, ub = p$ub,
+                                                db = p$db, b0 = p$b0, b1 = p$b1,
+                                                ib0 = p$IB0, kb = p$kb, uc = p$uc, dc = p$dc,
+                                                phi0 = p$phi0, phi1 = p$phi1, ic0 = p$IC0, kc = p$kc, cpp = cpp)
 
-  control_itn <- list(control_itn = control_itn)
+    control_itn <- list(control_itn = control_itn)
+  }
 
-  out <- append(append(append(vax_itn, vax_no_itn), control_itn), control_no_itn)
+  if(gamma_llin != 1) {
+    out <- append(append(append(vax_itn, vax_no_itn), control_itn), control_no_itn)
+  } else {
+    out <- append(vax_no_itn, control_no_itn)
+  }
+
 
   return(out)
 

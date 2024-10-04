@@ -3,7 +3,7 @@
 \name{get_maternal_start}
 \alias{get_maternal_start}
 \title{Estimate the average level of immunity in a 20 year old women
-to inform the maternal immunity}
+to inform maternal immunity levels}
 \usage{
 get_maternal_start(
   eir,
@@ -25,9 +25,9 @@ get_maternal_start(
 \arguments{
 \item{eir}{EIR per day.}
 
-\item{gamma_llin}{Adjustment to exposure for individuals sleeping under a bednet.}
+\item{gamma_llin}{Adjustment to exposure for individuals sleeping under a bednet. Set to 1 if not adjusting for this.}
 
-\item{season}{Seasonality profile.}
+\item{season}{Seasonality profile (vector of seasonality per day). Can be generated using \code{get_season}.}
 
 \item{rho}{Age dependent biting parameter (0.85).}
 
@@ -49,9 +49,9 @@ get_maternal_start(
 
 \item{dc}{Average duration of clinical immunity (10950 days).}
 
-\item{cpp}{Use cpp functions. Default = TRUE}
+\item{cpp}{Use cpp functions. Default = TRUE.}
 }
 \description{
 Estimate the average level of immunity in a 20 year old women
-to inform the maternal immunity
+to inform maternal immunity levels
 }

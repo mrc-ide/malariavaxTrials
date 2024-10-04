@@ -1,7 +1,6 @@
 #' Immunity function
 #'
-#' Acquisition of immunity against infection (IB) and clinical
-#' malaria (ICA). White et al (S26).
+#' Acquisition of immunity against infection (IB) and clinical malaria (ICA).
 #'
 #' @param exposure Vector of immunity-boosting exposure over time. Can be age-dependent EIR (epsilon) or infection hazard.
 #' @param u Period in which immunity cannot be boosted (days since last patent infection).
@@ -25,10 +24,11 @@ acquire_immunity_r <- function(exposure, u, d) {
 #' Maternal immunity function
 #'
 #' Maternal immunity is a function of the average immunity levels of a 20-year old woman.
-#' @param age Vector of age/time (in days) over a sufficiently long time, e.g. 1:(365 * 12).
+#'
+#' @param age Vector of simulation age/time (in days) over a sufficiently long period, e.g. 1:(365 * 10). Cannot be longer than vx.
 #' @param ica20 Average level of immunity in a 20 year old women.
-#' @param pm Maternal immunity relative to mother's immunity level.
-#' @param dm Average duration of maternal immunity.
+#' @param pm Maternal immunity relative to mother's immunity level (0.774).
+#' @param dm Average duration of maternal immunity (67.7 days).
 #' @return Maternal immunity over time.
 
 #' @export
@@ -43,11 +43,11 @@ get_icm <- function(age, ica20, pm, dm){
 }
 
 #' Estimate the average level of immunity in a 20 year old women
-#' to inform the maternal immunity
+#' to inform maternal immunity levels
 #'
 #' @param eir EIR per day.
-#' @param gamma_llin Adjustment to exposure for individuals sleeping under a bednet.
-#' @param season Seasonality profile.
+#' @param gamma_llin Adjustment to exposure for individuals sleeping under a bednet. Set to 1 if not adjusting for this.
+#' @param season Seasonality profile (vector of seasonality per day). Can be generated using `get_season`.
 #' @param rho Age dependent biting parameter (0.85).
 #' @param a0 Age dependent biting parameter (2920 days).
 #' @param ub Period in which pre-erythrocytic immunity cannot be boosted (7.2 days).
@@ -58,7 +58,7 @@ get_icm <- function(age, ica20, pm, dm){
 #' @param kb Shape parameter for pre-erythrocytic immunity (2.16).
 #' @param uc Period in which clinical immunity cannot be boosted (6.06 days).
 #' @param dc Average duration of clinical immunity (10950 days).
-#' @param cpp Use cpp functions. Default = TRUE
+#' @param cpp Use cpp functions. Default = TRUE.
 #'
 #' @export
 get_maternal_start <- function(eir, gamma_llin,

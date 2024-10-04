@@ -7,13 +7,13 @@
 get_icm(age, ica20, pm, dm)
 }
 \arguments{
-\item{age}{Vector of age/time (in days) over a sufficiently long time, e.g. 1:(365 * 12).}
+\item{age}{Vector of simulation age/time (in days) over a sufficiently long period, e.g. 1:(365 * 10). Cannot be longer than vx.}
 
 \item{ica20}{Average level of immunity in a 20 year old women.}
 
-\item{pm}{Maternal immunity relative to mother's immunity level.}
+\item{pm}{Maternal immunity relative to mother's immunity level (0.774).}
 
-\item{dm}{Average duration of maternal immunity.}
+\item{dm}{Average duration of maternal immunity (67.7 days).}
 }
 \value{
 Maternal immunity over time.

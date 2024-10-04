@@ -7,13 +7,13 @@
 get_infection_hazard(epsilon, b, seasonality = NULL, vaccine_efficacy = NULL)
 }
 \arguments{
-\item{epsilon}{Vector of age-dependent EIR over time/age.}
+\item{epsilon}{Vector of age-specific EIR.}
 
 \item{b}{Probability of infection upon mosquito bite.}
 
-\item{seasonality}{Seasonality profile.}
+\item{vaccine_efficacy}{Vaccine efficacy against infection (proportion). Default = NULL - no vaccine.}
 
-\item{vaccine_efficacy}{Vaccine efficacy against infection (proportion)}
+\item{season}{Seasonality profile (vector of seasonality per day). Default = NULL - no seasonality. Can also be generated using \code{get_season}.}
 }
 \description{
 Calculate the risk of infection

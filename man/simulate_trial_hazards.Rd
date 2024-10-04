@@ -6,11 +6,11 @@
 \usage{
 simulate_trial_hazards(
   eir,
+  age,
   age_at_enrollment,
   gamma_llin,
   vx,
   r_clin,
-  age,
   n = 10,
   season = rep(1, 365),
   overrides = list(s2 = 1.16),
@@ -20,31 +20,30 @@ simulate_trial_hazards(
 \arguments{
 \item{eir}{EIR per day.}
 
+\item{age}{Vector of simulation age/time (in days) over a sufficiently long period, e.g. 1:(365 * 10). Cannot be longer than vectors in vx.}
+
 \item{age_at_enrollment}{Age at enrollment into trial (days).}
 
-\item{gamma_llin}{Adjustment to exposure for individuals sleeping under a bednet.}
+\item{gamma_llin}{Adjustment to exposure for individuals sleeping under a bednet. Set to 1 if not adjusting for this.}
 
-\item{vx}{Vaccine efficacy over time (proportion). Must be a list of vectors. Can contain multiple vectors for different vaccine arms in the trial (e.g. different doses, booster schedules)}
+\item{vx}{Vaccine efficacy over time (proportion). Must be a list of vectors. Can contain multiple vectors for different vaccine arms in the trial (e.g. different doses, booster schedules).}
 
 \item{r_clin}{Adjustment for case definition.}
 
-\item{age}{Vector of age/time (in days) over a sufficiently long time, e.g. 1:(365 * 12).}
+\item{n}{Number of heterogeneity groups (in mosquito bite exposure). Default = 10.}
 
-\item{n}{Number of heterogeneity groups (in mosquito bite exposure)}
+\item{season}{Seasonality profile (vector of seasonality per day). Default = rep(1, 365) - no seasonality. Can also be generated using \code{get_season}.}
 
-\item{season}{Seasonality profile. Default = rep(1, 365) - no seasonality.}
+\item{overrides}{A named list of parameter values to use instead of defaults. Can be used to change malaria model parameters.}
 
-\item{overrides}{a named list of parameter values to use instead of defaults.}
-
-\item{cpp}{Use cpp functions. Default = TRUE}
+\item{cpp}{Use cpp functions. Default = TRUE.}
 }
 \value{
 List of simulated clinical hazards for each trial arm cohort
 }
 \description{
 Simulate clinical hazard in the vaccine and control arms of a trial.
-Option to adjust for ITN use in the trial (@param gamma_llin).
 Clinical incidence is returned individually for the vaccine arms with and without bednets
 and the control arm with and without bednets to allow fitting to invididual-level
-data by ITN use.
+data by ITN use. Option to adjust for ITN use in the trial using \code{gamma_llin}.
 }

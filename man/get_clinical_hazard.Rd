@@ -6,12 +6,12 @@
 \usage{
 get_clinical_hazard(
   eir,
+  age,
   age_at_enrollment,
   gamma_llin,
   vx,
   season,
   icm,
-  age,
   n,
   zeta,
   weight,
@@ -35,19 +35,19 @@ get_clinical_hazard(
 \arguments{
 \item{eir}{EIR per day.}
 
+\item{age}{Vector of simulation age/time (in days) over a sufficiently long period, e.g. 1:(365 * 10). Cannot be longer than vx.}
+
 \item{age_at_enrollment}{Age at enrollment into trial (days).}
 
-\item{gamma_llin}{Adjustment to exposure for individuals sleeping under a bednet.}
+\item{gamma_llin}{Adjustment to exposure for individuals sleeping under a bednet. Set to 1 if not adjusting for this.}
 
-\item{vx}{Vaccine efficacy over time (proportion).}
+\item{vx}{Vector of vaccine efficacy over time (proportion).}
 
-\item{season}{Seasonality profile (vector of seasonality per day).}
+\item{season}{Seasonality profile (vector of seasonality per day). Can be generated using \code{get_season}.}
 
 \item{icm}{Maternal immunity level.}
 
-\item{age}{Vector of age/time (in days) over a sufficiently long time, e.g. 1:(365 * 12).}
-
-\item{n}{Number of biting heterogeneity groups.}
+\item{n}{Number of heterogeneity groups (in mosquito bite exposure).}
 
 \item{zeta}{Heterogeneity parameters.}
 
@@ -75,15 +75,18 @@ get_clinical_hazard(
 
 \item{phi0}{Maximum probability of clinical disease due to no clinical immunity (0.792).}
 
-\item{phi1}{Maximum reduction in probability of clinical disease due to clinical immunity (0.00074)}
+\item{phi1}{Maximum reduction in probability of clinical disease due to clinical immunity (0.00074).}
 
 \item{ic0}{Scale parameter for clinical immunity (18).}
 
 \item{kc}{Shape parameter for clinical immunity (2.37).}
 
-\item{cpp}{Use cpp functions. Default = TRUE}
+\item{cpp}{Use cpp functions. Default = TRUE.}
 }
 \description{
 Simulates clinical incidence in a cohort of children over time since birth (starting at age 0).
-Clinical incidence is returned from enrollment into the trial, defined by @param age_at_enrollment.
+Clinical incidence is returned from enrollment into the trial, defined by \code{age_at_enrollment}.
+\code{age_at_enrollment} also determines the time at which the vaccine effect represented in \code{vx} starts.
+The seasonality pattern in \code{season} needs to start at trial enrollment, and gets repeated
+during the simulation if shorter than the simulation period defined by \code{age}.
 }

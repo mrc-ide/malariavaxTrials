@@ -17,6 +17,5 @@ acquire_immunity_r(exposure, u, d)
 Immunity over time.
 }
 \description{
-Acquisition of immunity against infection (IB) and clinical
-malaria (ICA). White et al (S26).
+Acquisition of immunity against infection (IB) and clinical malaria (ICA).
 }

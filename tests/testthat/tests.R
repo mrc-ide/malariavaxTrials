@@ -30,6 +30,10 @@ test_that("simulate_trial_hazards works", {
   expect_true(all(1-out_cpp$vax_itn_arm1/out_cpp$control_itn <= 1))
   expect_true(all(1-out_cpp$vax_no_itn_arm1/out_cpp$control_no_itn <= 1))
 
+  out_cpp <- simulate_trial_hazards(eir = 20/365, age_at_enrollment = 12*30, gamma_llin = 1, vx = list(vx),
+                                    n = 10, r_clin = 1.1, age = 1:(10*365), cpp = TRUE)
+  expect_length(out_cpp, length(list(vx))+1)
+
   # Two vaccine cohorts
   ab2 <- ab(timesteps=10*365, dose_timesteps = td, init_titres = init_titres,
            prop_short = prop_short, dur_short = dur_short, dur_long = dur_long)
@@ -123,15 +127,23 @@ test_that("get_clinical_hazard works", {
 
   vx <- efficacy(titre=ab, max_efficacy = 0.9, alpha = 0.6, beta = 100)
 
+  # Load fitted model parameters
+  url <- "https://raw.github.com/mrc-ide/malariaEquilibrium/master/inst/extdata/Jamie_parameters.rds"
+  p <- readRDS(gzcon(url(url)))
+
   # Heterogeneity
   n <- 10
   gh <- statmod::gauss.quad.prob(n = n, dist = "normal")
   zeta <- exp(-p$s2 * 0.5 + sqrt(p$s2) * gh$nodes)
-  weight <- gh$weights
+  weight <- gh$weight
 
-  # Load fitted model parameters
-  url <- "https://raw.github.com/mrc-ide/malariaEquilibrium/master/inst/extdata/Jamie_parameters.rds"
-  p <- readRDS(gzcon(url(url)))
+  # Maternal immunity
+  ica20 <- get_maternal_start(eir = 20/365, gamma_llin = 1, season = rep(1,365),
+                              rho = p$rho, a0 = p$a0, ub = p$ub, db = p$db,
+                              b0 = p$b0, b1 = p$b1, ib0 = p$IB0, kb = p$kb,
+                              uc = p$uc, dc = p$dc, cpp = TRUE)
+
+  icm <- get_icm(age = 1:(10*365), ica20 = ica20, pm = p$PM, dm =p$dm)
 
   ch <- get_clinical_hazard(eir= 20/365, age_at_enrollment = 12*30, gamma_llin= 1, vx = vx,
                           season=rep(1,365), icm = icm, age = 1:(10*365), n = n, zeta = zeta, weight = weight,
