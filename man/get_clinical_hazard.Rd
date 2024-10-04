@@ -41,7 +41,7 @@ get_clinical_hazard(
 
 \item{gamma_llin}{Adjustment to exposure for individuals sleeping under a bednet. Set to 1 if not adjusting for this.}
 
-\item{vx}{Vector of vaccine efficacy over time (proportion).}
+\item{vx}{Vector of vaccine efficacy against infection over time (proportion).}
 
 \item{season}{Seasonality profile (vector of seasonality per day). Can be generated using \code{get_season}.}
 

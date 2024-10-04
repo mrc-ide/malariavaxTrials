@@ -11,9 +11,9 @@ get_infection_hazard(epsilon, b, seasonality = NULL, vaccine_efficacy = NULL)
 
 \item{b}{Probability of infection upon mosquito bite.}
 
-\item{vaccine_efficacy}{Vaccine efficacy against infection (proportion). Default = NULL - no vaccine.}
+\item{seasonality}{Seasonality profile (vector of seasonality per day). Default = NULL - no seasonality. Can also be generated using \code{get_season}.}
 
-\item{season}{Seasonality profile (vector of seasonality per day). Default = NULL - no seasonality. Can also be generated using \code{get_season}.}
+\item{vaccine_efficacy}{Vaccine efficacy against infection over time (proportion). Default = NULL - no vaccine.}
 }
 \description{
 Calculate the risk of infection

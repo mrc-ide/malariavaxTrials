@@ -15,7 +15,7 @@ get_epsilon <- function(age, eir, rho = 0.85, a0 = 2920, gamma_llin = 1){
 #'
 #' @param epsilon Vector of age-specific EIR.
 #' @param b Probability of infection upon mosquito bite.
-#' @param season Seasonality profile (vector of seasonality per day). Default = NULL - no seasonality. Can also be generated using `get_season`.
+#' @param seasonality Seasonality profile (vector of seasonality per day). Default = NULL - no seasonality. Can also be generated using `get_season`.
 #' @param vaccine_efficacy Vaccine efficacy against infection over time (proportion). Default = NULL - no vaccine.
 #'
 #' @export

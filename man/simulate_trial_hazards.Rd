@@ -26,7 +26,7 @@ simulate_trial_hazards(
 
 \item{gamma_llin}{Adjustment to exposure for individuals sleeping under a bednet. Set to 1 if not adjusting for this.}
 
-\item{vx}{Vaccine efficacy over time (proportion). Must be a list of vectors. Can contain multiple vectors for different vaccine arms in the trial (e.g. different doses, booster schedules).}
+\item{vx}{Vaccine efficacy against infection over time (proportion). Must be a list of vectors. Can contain multiple vectors for different vaccine arms in the trial (e.g. different doses, booster schedules).}
 
 \item{r_clin}{Adjustment for case definition.}
 
