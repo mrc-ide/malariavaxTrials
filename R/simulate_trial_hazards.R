@@ -49,8 +49,9 @@ simulate_trial_hazards <- function(eir, age, age_at_enrollment, gamma_llin, vx, 
   }
 
   # Load fitted model parameters
-    url <- "https://raw.github.com/mrc-ide/malariaEquilibrium/master/inst/extdata/Jamie_parameters.rds"
-    p <- readRDS(gzcon(url(url)))
+    #url <- "https://raw.github.com/mrc-ide/malariaEquilibrium/master/inst/extdata/Jamie_parameters.rds"
+    name_full <- system.file("extdata/", "Jamie_parameters.rds", package = 'malariavaxTrials', mustWork = TRUE)
+    p <- readRDS(name_full)
 
   # Override parameters with any client specified ones
   if (!is.list(overrides)) {

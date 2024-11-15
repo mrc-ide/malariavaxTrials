@@ -128,8 +128,8 @@ test_that("get_clinical_hazard works", {
   vx <- efficacy(titre=ab, max_efficacy = 0.9, alpha = 0.6, beta = 100)
 
   # Load fitted model parameters
-  url <- "https://raw.github.com/mrc-ide/malariaEquilibrium/master/inst/extdata/Jamie_parameters.rds"
-  p <- readRDS(gzcon(url(url)))
+  name_full <- system.file("extdata/", "Jamie_parameters.rds", package = 'malariavaxTrials', mustWork = TRUE)
+  p <- readRDS(name_full)
 
   # Heterogeneity
   n <- 10
