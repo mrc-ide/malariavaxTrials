@@ -2,9 +2,10 @@
 % Please edit documentation in R/simulate_trial_hazards.R
 \name{simulate_trial_hazards}
 \alias{simulate_trial_hazards}
-\title{Simulate clinical hazard in trial cohort}
+\title{Simulate clinical or severe hazard in trial cohort}
 \usage{
 simulate_trial_hazards(
+  outcome = "clinical",
   eir,
   age,
   age_at_enrollment,
@@ -18,6 +19,8 @@ simulate_trial_hazards(
 )
 }
 \arguments{
+\item{outcome}{"clinical" for clinical hazard or "severe" for severe malaria (default = "clinical").}
+
 \item{eir}{EIR per day.}
 
 \item{age}{Vector of simulation age/time (in days) over a sufficiently long period, e.g. 1:(365 * 10). Cannot be longer than vectors in vx.}
@@ -42,8 +45,8 @@ simulate_trial_hazards(
 List of simulated clinical hazards for each trial arm cohort
 }
 \description{
-Simulate clinical hazard in the vaccine and control arms of a trial.
-Clinical incidence is returned individually for the vaccine arms with and without bednets
+Simulate clinical/severe hazard in the vaccine and control arms of a trial.
+Clinical/severe incidence is returned individually for the vaccine arms with and without bednets
 and the control arm with and without bednets to allow fitting to invididual-level
 data by ITN use. Option to adjust for ITN use in the trial using \code{gamma_llin}.
 }

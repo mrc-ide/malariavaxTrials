@@ -121,6 +121,25 @@ get_phi_r <- function(ica, icm, phi0, phi1, ic0, kc){
   phi0 * (phi1 + ((1 - phi1) / (1 + ((ica + icm) / ic0)^ kc)))
 }
 
+#' Calculate probability of an infection leading to a severe malaria episode (theta)
+#'
+#' @param age Vector of simulation age/time (in days).
+#' @param iva Severe immunity level.
+#' @param ivm Maternal severe immunity level.
+#' @param theta0 Maximum probability of severe malaria due to no severe immunity (0.075).
+#' @param theta1 Maximum reduction in probability of severe malaria due to severe immunity (0.0001)
+#' @param iv0 Scale parameter for severe immunity (1.096).
+#' @param kv Shape parameter for severe immunity (2.00).
+#' @param fv0 Age-dependent modifier (0.141).
+#' @param av Age-dependent modifier (2493.41).
+#' @param gammav Age-dependent modifier (2.91).
+#'
+#' @export
+get_theta <- function(age, iva, ivm, theta0, theta1, iv0, kv, fv0, av, gammav){
+  fv <- 1 - (1 - fv0)/(1 + (age/av)^gammav)
+  theta0 * (theta1 + ((1 - theta1) / (1 + fv * ((iva + ivm) / iv0)^ kv)))
+}
+
 #' Calculate probability of infection upon receiving an infectious bite (b)
 #'
 #' @param ib Pre-erythrocytic immunity level.

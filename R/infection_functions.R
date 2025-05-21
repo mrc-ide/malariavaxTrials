@@ -55,6 +55,15 @@ get_clinical_hazard_no_het <- function(infection_hazard, clinical_probability){
   infection_hazard * clinical_probability
 }
 
+#' Calculate the risk of severe malaria in the absence of biting heterogeneity
+#'
+#' @param infection_hazard Infection hazard over time.
+#' @param severe_probability Probability of developing severe malaria.
+#'
+get_severe_hazard_no_het <- function(infection_hazard, severe_probability){
+  infection_hazard * severe_probability
+}
+
 #' Simulate average clinical hazard for a cohort
 #'
 #' Simulates clinical incidence in a cohort of children over time since birth (starting at age 0).
@@ -163,4 +172,112 @@ get_clinical_hazard <- function(eir, age, age_at_enrollment, gamma_llin, vx,
   }
 
   return(clinical_hazard)
+}
+
+#' Simulate average severe hazard for a cohort
+#'
+#' Simulates severe malaria incidence in a cohort of children over time since birth (starting at age 0).
+#' Severe malaria incidence is returned from enrollment into the trial, defined by `age_at_enrollment`.
+#' `age_at_enrollment` also determines the time at which the vaccine effect represented in `vx` starts.
+#' The seasonality pattern in `season` needs to start at trial enrollment, and gets repeated
+#' during the simulation if shorter than the simulation period defined by `age`.
+#'
+#' @param eir EIR per day.
+#' @param age Vector of simulation age/time (in days) over a sufficiently long period, e.g. 1:(365 * 10). Cannot be longer than vx.
+#' @param age_at_enrollment Age at enrollment into trial (days).
+#' @param gamma_llin Adjustment to exposure for individuals sleeping under a bednet. Set to 1 if not adjusting for this.
+#' @param vx Vector of vaccine efficacy against infection over time (proportion).
+#' @param season Seasonality profile (vector of seasonality per day). Can be generated using `get_season`.
+#' @param ivm Maternal severe immunity level.
+#' @param n Number of heterogeneity groups (in mosquito bite exposure).
+#' @param zeta Heterogeneity parameters.
+#' @param weight Heterogeneity weights.
+#' @param rho Age dependent biting parameter (0.85).
+#' @param a0 Age dependent biting parameter (2920 days).
+#' @param ub Period in which pre-erythrocytic immunity cannot be boosted (7.2 days).
+#' @param db Average duration of pre-erythrocytic immunity (3650 days).
+#' @param b0 Maximum probability of infection due to no pre-erythrocytic immunity (0.59).
+#' @param b1 Maximum reduction in probability of infection due to pre-erythrocytic immunity (0.5).
+#' @param ib0 Scale parameter for pre-erythrocytic immunity (43.9).
+#' @param kb Shape parameter for pre-erythrocytic immunity (2.16).
+#' @param uv Period in which severe immunity cannot be boosted (11.43 days).
+#' @param dv Average duration of severe immunity (10950 days).
+#' @param theta0 Maximum probability of severe malaria due to no severe immunity (0.075).
+#' @param theta1 Maximum reduction in probability of severe malaria due to severe immunity (0.0001)
+#' @param iv0 Scale parameter for severe immunity (1.096).
+#' @param kv Shape parameter for severe immunity (2.00).
+#' @param fv0 Age-dependent modifier (0.141).
+#' @param av Age-dependent modifier (2493.41).
+#' @param gammav Age-dependent modifier (2.91).
+#' @param cpp Use cpp functions. Default = TRUE.
+
+#' @export
+get_severe_hazard <- function(eir, age, age_at_enrollment, gamma_llin, vx,
+                                season, ivm, n, zeta, weight,
+                                rho, a0, ub, db, b0, b1, ib0, kb, uv, dv,
+                                theta0,theta1, iv0, kv, fv0, av, gammav, cpp = TRUE) {
+
+  if(length(vx) < length(age)) {
+    stop("vx must be the same length as the age vector or longer")
+  }
+
+
+  if(max(age) < age_at_enrollment) {
+    stop("age_at_enrollment must be within age vector")
+  }
+
+  if(length(season) %% 365 != 0){
+    stop("The length of the season vector must be a multiple of 365")
+  }
+
+  if(n < 1 | n != floor(n)) {
+    stop("n must be an integer >= 1")
+  }
+
+
+  time <- round(age - age_at_enrollment)
+  vx_shift <- c(rep(0, sum(time < 0)), vx)[age]
+  seasonality <-  season[(time %% length(season)) + 1]
+
+  severe_hazard <- rep(0, length(which(time > 0)))
+
+  for(h in 1:n){
+
+    # Exposure to infectious bites
+    epsilon <- get_epsilon(age = age, eir = eir * zeta[h], rho = rho, a0 = a0,
+                           gamma_llin = gamma_llin)
+
+    # Immunity against malaria infection
+    ib <- acquire_immunity_r(exposure = epsilon, u = ub, d = db)
+
+    # Probability infection
+    if(cpp){
+      b <- get_b_cpp(ib = ib, b0 = b0, b1 = b1, ib0 = ib0, kb = kb)
+    } else {
+      b <- get_b_r(ib = ib, b0 = b0, b1 = b1, ib0 = ib0, kb = kb)
+    }
+
+    # Hazard of infection
+    infection_hazard <- get_infection_hazard(epsilon = epsilon, b = b,
+                                             seasonality = seasonality,
+                                             vaccine_efficacy = vx_shift)
+
+    # Immunity against severe malaria
+    iva <- acquire_immunity_r(exposure = infection_hazard, u = uv, d = dv)
+
+    # Probability an infection is severe
+    theta <- get_theta(age = age, iva = iva, ivm = ivm, theta0 = theta0,
+                       theta1 = theta1, iv0 = iv0, kv = kv, fv0 = fv0, av = av,
+                       gammav = gammav)
+
+    index_period <- which(time > 0)
+
+    # Hazard of severe infection
+    severe_hazard <- severe_hazard +
+      get_severe_hazard_no_het(infection_hazard = infection_hazard,
+                                 severe_probability = theta)[index_period] * weight[h]
+
+  }
+
+  return(severe_hazard)
 }
