@@ -32,6 +32,7 @@ get_severe_hazard(
   fv0,
   av,
   gammav,
+  theta_scaler = 1,
   cpp = TRUE
 )
 }
@@ -89,6 +90,8 @@ get_severe_hazard(
 \item{av}{Age-dependent modifier (2493.41).}
 
 \item{gammav}{Age-dependent modifier (2.91).}
+
+\item{theta_scaler}{Muliplier on theta to add additional reduction in severe malaria in vaccinated cohort.}
 
 \item{cpp}{Use cpp functions. Default = TRUE.}
 }

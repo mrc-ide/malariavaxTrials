@@ -12,6 +12,7 @@
 #' @param gamma_llin Adjustment to exposure for individuals sleeping under a bednet. Set to 1 if not adjusting for this.
 #' @param vx Vaccine efficacy against infection over time (proportion). Must be a list of vectors. Can contain multiple vectors for different vaccine arms in the trial (e.g. different doses, booster schedules).
 #' @param r_clin Adjustment for case definition.
+#' @param theta_scaler Muliplier on theta to add additional reduction in severe malaria in vaccinated cohort.
 #' @param n Number of heterogeneity groups (in mosquito bite exposure). Default = 10.
 #' @param season Seasonality profile (vector of seasonality per day). Default = rep(1, 365) - no seasonality. Can also be generated using `get_season`.
 #' @param overrides A named list of parameter values to use instead of defaults. Can be used to change malaria model parameters.
@@ -21,7 +22,7 @@
 #'
 #' @export
 simulate_trial_hazards <- function(outcome = "clinical", eir, age, age_at_enrollment,
-                                   gamma_llin, vx, r_clin,
+                                   gamma_llin, vx, r_clin, theta_scaler = 1,
                                    n = 10, season = rep(1, 365),
                                    overrides = list(s2 = 1.16), cpp = TRUE) {
 
@@ -189,7 +190,8 @@ simulate_trial_hazards <- function(outcome = "clinical", eir, age, age_at_enroll
                                                       rho = p$rho, a0 = p$a0, ub = p$ub, db = p$db, b0 = p$b0,
                                                       b1 = p$b1, ib0 = p$IB0, kb = p$kb, uv = p$uv,
                                                       dv = p$dv, theta0 = p$theta0, theta1 = p$theta1, iv0 = p$IV0,
-                                                      kv = p$kv, fv0 = p$fv0, av = p$av, gammav = p$gammav, cpp = cpp)
+                                                      kv = p$kv, fv0 = p$fv0, av = p$av, gammav = p$gammav,
+                                                    theta_scaler = theta_scaler, cpp = cpp)
 
       # For vaccine cohort, with bednets
       if (gamma_llin != 1) {
@@ -199,7 +201,8 @@ simulate_trial_hazards <- function(outcome = "clinical", eir, age, age_at_enroll
                                                      rho = p$rho, a0 = p$a0, ub = p$ub, db = p$db, b0 = p$b0,
                                                      b1 = p$b1, ib0 = p$IB0, kb = p$kb, uv = p$uv,
                                                      dv = p$dv, theta0 = p$theta0, theta1 = p$theta1, iv0 = p$IV0,
-                                                     kv = p$kv, fv0 = p$fv0, av = p$av, gammav = p$gammav, cpp = cpp)
+                                                     kv = p$kv, fv0 = p$fv0, av = p$av, gammav = p$gammav,
+                                                   theta_scaler = theta_scaler, cpp = cpp)
       }
 
     }
@@ -218,7 +221,8 @@ simulate_trial_hazards <- function(outcome = "clinical", eir, age, age_at_enroll
                                                  db = p$db, b0 = p$b0, b1 = p$b1,
                                                  ib0 = p$IB0, kb = p$kb, uv = p$uv, dv = p$dv,
                                                  theta0 = p$theta0, theta1 = p$theta1, iv0 = p$IV0,
-                                                 kv = p$kv, fv0 = p$fv0, av = p$av, gammav = p$gammav, cpp = cpp)
+                                                 kv = p$kv, fv0 = p$fv0, av = p$av, gammav = p$gammav,
+                                                 theta_scaler = 1, cpp = cpp)
 
     control_no_itn <- list(control_no_itn = control_no_itn)
 
@@ -232,7 +236,8 @@ simulate_trial_hazards <- function(outcome = "clinical", eir, age, age_at_enroll
                                                 db = p$db, b0 = p$b0, b1 = p$b1,
                                                 ib0 = p$IB0, kb = p$kb, uv = p$uv, dv = p$dv,
                                                 theta0 = p$theta0, theta1 = p$theta1, iv0 = p$IV0,
-                                                kv = p$kv, fv0 = p$fv0, av = p$av, gammav = p$gammav, cpp = cpp)
+                                                kv = p$kv, fv0 = p$fv0, av = p$av, gammav = p$gammav,
+                                                theta_scaler = 1, cpp = cpp)
 
       control_itn <- list(control_itn = control_itn)
     }

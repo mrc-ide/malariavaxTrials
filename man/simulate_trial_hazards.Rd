@@ -12,6 +12,7 @@ simulate_trial_hazards(
   gamma_llin,
   vx,
   r_clin,
+  theta_scaler = 1,
   n = 10,
   season = rep(1, 365),
   overrides = list(s2 = 1.16),
@@ -32,6 +33,8 @@ simulate_trial_hazards(
 \item{vx}{Vaccine efficacy against infection over time (proportion). Must be a list of vectors. Can contain multiple vectors for different vaccine arms in the trial (e.g. different doses, booster schedules).}
 
 \item{r_clin}{Adjustment for case definition.}
+
+\item{theta_scaler}{Muliplier on theta to add additional reduction in severe malaria in vaccinated cohort.}
 
 \item{n}{Number of heterogeneity groups (in mosquito bite exposure). Default = 10.}
 

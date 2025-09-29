@@ -209,13 +209,14 @@ get_clinical_hazard <- function(eir, age, age_at_enrollment, gamma_llin, vx,
 #' @param fv0 Age-dependent modifier (0.141).
 #' @param av Age-dependent modifier (2493.41).
 #' @param gammav Age-dependent modifier (2.91).
+#' @param theta_scaler Muliplier on theta to add additional reduction in severe malaria in vaccinated cohort.
 #' @param cpp Use cpp functions. Default = TRUE.
 
 #' @export
 get_severe_hazard <- function(eir, age, age_at_enrollment, gamma_llin, vx,
                                 season, ivm, n, zeta, weight,
                                 rho, a0, ub, db, b0, b1, ib0, kb, uv, dv,
-                                theta0,theta1, iv0, kv, fv0, av, gammav, cpp = TRUE) {
+                                theta0,theta1, iv0, kv, fv0, av, gammav, theta_scaler = 1, cpp = TRUE) {
 
   if(length(vx) < length(age)) {
     stop("vx must be the same length as the age vector or longer")
@@ -275,7 +276,7 @@ get_severe_hazard <- function(eir, age, age_at_enrollment, gamma_llin, vx,
     # Hazard of severe infection
     severe_hazard <- severe_hazard +
       get_severe_hazard_no_het(infection_hazard = infection_hazard,
-                                 severe_probability = theta)[index_period] * weight[h]
+                                 severe_probability = theta * theta_scaler)[index_period] * weight[h]
 
   }
 
