@@ -276,7 +276,7 @@ get_severe_hazard <- function(eir, age, age_at_enrollment, gamma_llin, vx,
     # Hazard of severe infection
     severe_hazard <- severe_hazard +
       get_severe_hazard_no_het(infection_hazard = infection_hazard,
-                                 severe_probability = theta * theta_scaler)[index_period] * weight[h]
+                                 severe_probability = (theta * (1-vx_shift*theta_scaler)))[index_period] * weight[h]
 
   }
 
