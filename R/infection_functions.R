@@ -239,6 +239,7 @@ get_severe_hazard <- function(eir, age, age_at_enrollment, gamma_llin, vx,
   time <- round(age - age_at_enrollment)
   vx_shift <- c(rep(0, sum(time < 0)), vx)[age]
   seasonality <-  season[(time %% length(season)) + 1]
+  theta_scaler_shift <- c(rep(0, sum(time < 0)), theta_scaler)[age]
 
   severe_hazard <- rep(0, length(which(time > 0)))
 
@@ -276,7 +277,7 @@ get_severe_hazard <- function(eir, age, age_at_enrollment, gamma_llin, vx,
     # Hazard of severe infection
     severe_hazard <- severe_hazard +
       get_severe_hazard_no_het(infection_hazard = infection_hazard,
-                                 severe_probability = (theta * (1-vx_shift*theta_scaler)))[index_period] * weight[h]
+                                 severe_probability = (theta * (1-theta_scaler_shift)))[index_period] * weight[h]
 
   }
 
