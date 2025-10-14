@@ -216,7 +216,7 @@ get_clinical_hazard <- function(eir, age, age_at_enrollment, gamma_llin, vx,
 get_severe_hazard <- function(eir, age, age_at_enrollment, gamma_llin, vx,
                                 season, ivm, n, zeta, weight,
                                 rho, a0, ub, db, b0, b1, ib0, kb, uv, dv,
-                                theta0,theta1, iv0, kv, fv0, av, gammav, theta_scaler = 1, cpp = TRUE) {
+                                theta0,theta1, iv0, kv, fv0, av, gammav, theta_scaler, cpp = TRUE) {
 
   if(length(vx) < length(age)) {
     stop("vx must be the same length as the age vector or longer")

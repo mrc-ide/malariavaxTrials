@@ -22,7 +22,7 @@
 #'
 #' @export
 simulate_trial_hazards <- function(outcome = "clinical", eir, age, age_at_enrollment,
-                                   gamma_llin, vx, r_clin, theta_scaler = 1,
+                                   gamma_llin, vx, r_clin, theta_scaler,
                                    n = 10, season = rep(1, 365),
                                    overrides = list(s2 = 1.16), cpp = TRUE) {
 
@@ -222,7 +222,7 @@ simulate_trial_hazards <- function(outcome = "clinical", eir, age, age_at_enroll
                                                  ib0 = p$IB0, kb = p$kb, uv = p$uv, dv = p$dv,
                                                  theta0 = p$theta0, theta1 = p$theta1, iv0 = p$IV0,
                                                  kv = p$kv, fv0 = p$fv0, av = p$av, gammav = p$gammav,
-                                                 theta_scaler = 1, cpp = cpp)
+                                                 theta_scaler = rep(0, length(age)), cpp = cpp)
 
     control_no_itn <- list(control_no_itn = control_no_itn)
 
@@ -237,7 +237,7 @@ simulate_trial_hazards <- function(outcome = "clinical", eir, age, age_at_enroll
                                                 ib0 = p$IB0, kb = p$kb, uv = p$uv, dv = p$dv,
                                                 theta0 = p$theta0, theta1 = p$theta1, iv0 = p$IV0,
                                                 kv = p$kv, fv0 = p$fv0, av = p$av, gammav = p$gammav,
-                                                theta_scaler = 1, cpp = cpp)
+                                                theta_scaler = rep(0, length(age)), cpp = cpp)
 
       control_itn <- list(control_itn = control_itn)
     }
